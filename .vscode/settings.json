@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "memory": "cpp",
+        "type_traits": "cpp",
+        "mutex": "cpp",
+        "condition_variable": "cpp",
+        "utility": "cpp",
+        "xtree": "cpp"
+    }
+}
