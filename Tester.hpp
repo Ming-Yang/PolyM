@@ -111,6 +111,7 @@ public:
 
 private:
     std::string name_;
+    // C++11函数指针
     std::vector<std::pair<std::function<void()>, std::string>> tests_;
 };
 
