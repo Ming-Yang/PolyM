@@ -23,6 +23,7 @@ public:
      */
     Msg(int msgId);
 
+    //默认的虚析构函数，禁用拷贝构造函数和复制运算符的重载，安全考虑
     virtual ~Msg() = default;
     Msg(const Msg&) = delete;
     Msg& operator=(const Msg&) = delete;
@@ -45,6 +46,7 @@ public:
     MsgUID getUniqueId() const;
 
 protected:
+// 移动构造函数和移动复制运算符重载
     Msg(Msg&&) = default;
     Msg& operator=(Msg&&) = default;
 

@@ -31,13 +31,19 @@ public:
     {
         std::unique_lock<std::mutex> lock(queueMutex_);
 
-        if (timeoutMillis <= 0)
-            queueCond_.wait(lock, [this]{return !queue_.empty();});
+        // 如果没有规定时间，则一直等待直到队列不空
+        // 如果有规定时间，超时则获得一个超时的MSG
+		if (timeoutMillis <= 0)
+		{
+			// lambda表达式，wait变量为真的时候唤醒，函数返回queue不空的时候为真
+			queueCond_.wait(lock, [this] {return !queue_.empty(); });
+		}
         else
         {
             // wait_for returns false if the return is due to timeout
             auto timeoutOccured = !queueCond_.wait_for(
                 lock,
+                // C++11 提供的chrono时间类，需要传入这样参数
                 std::chrono::milliseconds(timeoutMillis),
                 [this]{return !queue_.empty();});
 
@@ -45,6 +51,7 @@ public:
                 queue_.emplace(new Msg(MSG_TIMEOUT));
         }
 
+        // 依然是提供一个MSG副本的指针
         auto msg = queue_.front()->move();
         queue_.pop();
         return msg;
@@ -52,13 +59,16 @@ public:
 
     std::unique_ptr<Msg> request(Msg&& msg)
     {
+        // 新建临时队列
         // Construct an ad hoc Queue to handle response Msg
         std::unique_lock<std::mutex> lock(responseMapMutex_);
+        // emplace可以减少拷贝产生的开销。map的emplace返回一组pair,first->位置的迭代器,second->true or false
         auto it = responseMap_.emplace(
             std::make_pair(msg.getUniqueId(), std::unique_ptr<Queue>(new Queue))).first;
         lock.unlock();
 
         put(std::move(msg));
+
         auto response = it->second->get(); // Block until response is put to the response Queue
 
         lock.lock();
@@ -101,6 +111,8 @@ Queue::~Queue()
 {
 }
 
+// 为什么这样封装了一层呢
+// 封装了新建对象的过程(构造函数)
 void Queue::put(Msg&& msg)
 {
     impl_->put(std::move(msg));

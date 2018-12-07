@@ -35,6 +35,7 @@ public:
      * @param timeoutMillis How many ms to wait for message until timeout happens.
      *                      0 = wait indefinitely.
      */
+    // 输入等待时间，返回MSG指针
     std::unique_ptr<Msg> get(int timeoutMillis = 0);
 
     /**
@@ -43,6 +44,7 @@ public:
      *
      * @param msg Request message. Is put to the queue so it can be retrieved from it with get().
      */
+    // 获取消息标识符
     std::unique_ptr<Msg> request(Msg&& msg);
 
     /**
