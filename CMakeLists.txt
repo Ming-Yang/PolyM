@@ -1,5 +1,7 @@
 project(PolyM)
-set(CMAKE_CXX_FLAGS "-std=c++11 -pedantic -Wall -Wextra -Weffc++ -O3")
+if(CMAKE_COMPILER_IS_GNUCXX)
+    set(CMAKE_CXX_FLAGS "-std=c++11 -pedantic -Wall -Wextra -Weffc++ -O3")
+endif(CMAKE_COMPILER_IS_GNUCXX)
 add_library(polym Msg.cpp Queue.cpp)
 add_executable(testpolym Test.cpp)
 target_link_libraries(testpolym polym)
